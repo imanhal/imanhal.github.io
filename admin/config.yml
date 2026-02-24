@@ -3,6 +3,7 @@ backend:
   repo: imanhal/imanhal-site-source
   branch: main
   open_authoring: false
+  auth_scope: repo
 
 local_backend: true
 publish_mode: simple
