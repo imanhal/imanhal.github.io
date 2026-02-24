@@ -1,0 +1,31 @@
+backend:
+  name: github
+  repo: imanhal/imanhal-site-source
+  branch: main
+  open_authoring: false
+
+local_backend: true
+publish_mode: simple
+
+site_url: https://imanhal.github.io
+display_url: https://imanhal.github.io
+media_folder: assets/uploads
+public_folder: /assets/uploads
+
+collections:
+  - name: news
+    label: My News
+    label_singular: News Article
+    folder: _news
+    create: true
+    delete: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [date, title]
+    editor:
+      preview: false
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Publish Date, name: date, widget: datetime }
+      - { label: Summary, name: summary, widget: text, required: false }
+      - { label: Body, name: body, widget: markdown }
