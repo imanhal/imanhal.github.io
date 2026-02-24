@@ -5,6 +5,8 @@ backend:
   open_authoring: false
   auth_scope: repo
   site_domain: musical-brioche-62c10e.netlify.app
+  base_url: https://api.netlify.com
+  auth_endpoint: auth
 
 local_backend: true
 publish_mode: simple
