@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="news-post-page">
 
 <head>
   <meta charset="utf-8">
@@ -11,9 +11,24 @@
 
   <link rel="stylesheet" href="/assets/css/main.min.css">
   <link rel="stylesheet" href="/assets/css/vendors.min.css">
+  
+  <style>
+    html.news-post-page {
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body.news-post-page-body {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+  </style>
 </head>
 
-<body>
+<body class="news-post-page-body">
   <div class="layout">
     <section class="card neumorphism-card-big">
       <h1 class="title">Website v3 Started 2</h1>
