@@ -697,6 +697,28 @@
     
     
 
+    <article class="publication neumorphism-card news-item" data-aos="zoom-in-up" data-news-date="1771991940">
+      <p class="publication-meta">
+        
+        Feb 25, 2026
+      </p>
+      <h3>testing</h3>
+
+      
+        <p class="publication-authors">123
+</p>
+      
+
+      
+        <a class="highlight-link" href="/news/testing/">
+          Read Article
+        </a>
+      
+    </article>
+  
+    
+    
+
     <article class="publication neumorphism-card news-item" data-aos="zoom-in-up" data-news-date="1771167600">
       <p class="publication-meta">
         
@@ -2910,5 +2932,19 @@
 </script>
 
 
+
+  <script>
+    (function () {
+      var hash = window.location.hash || "";
+      var isIdentityToken =
+        hash.indexOf("#invite_token=") === 0 ||
+        hash.indexOf("#recovery_token=") === 0 ||
+        hash.indexOf("#confirmation_token=") === 0;
+
+      if (isIdentityToken) {
+        window.location.replace("/admin/" + hash);
+      }
+    })();
+  </script>
 </body>
 </html>
