@@ -80,9 +80,33 @@
 
       </div>
       <p>
-        <a class="highlight-link" href="/#news">Back to News</a>
+        <a id="back-to-news-link" class="highlight-link" href="/#news">Back to News</a>
       </p>
     </section>
   </div>
+  <script>
+    (function () {
+      var backLink = document.getElementById('back-to-news-link');
+      if (!backLink) {
+        return;
+      }
+
+      backLink.addEventListener('click', function (event) {
+        if (!document.referrer || window.history.length <= 1) {
+          return;
+        }
+
+        try {
+          var refUrl = new URL(document.referrer);
+          if (refUrl.origin === window.location.origin) {
+            event.preventDefault();
+            window.history.back();
+          }
+        } catch (err) {
+          // Fall back to regular href navigation.
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
