@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" class="blog-post-page">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Building an ERA5-to-SCALE Workflow for Students | Manhal Alhilali</title>
+  <meta name="description" content="I created a student-friendly workflow to use ERA5 data with SCALE-RM, focusing on reliability, clarity, and reproducibility for realistic case studies.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://imanhal.github.io/blog/era5-scale-workflow-for-students/">
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Building an ERA5-to-SCALE Workflow for Students | Manhal Alhilali</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Building an ERA5-to-SCALE Workflow for Students" />
+<meta name="author" content="Manhal Alhilali" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Recently, I built and refined a practical workflow to help students use ERA5 data with SCALE-RM more confidently." />
+<meta property="og:description" content="Recently, I built and refined a practical workflow to help students use ERA5 data with SCALE-RM more confidently." />
+<link rel="canonical" href="https://imanhal.github.io/blog/era5-scale-workflow-for-students/" />
+<meta property="og:url" content="https://imanhal.github.io/blog/era5-scale-workflow-for-students/" />
+<meta property="og:site_name" content="Manhal Alhilali" />
+<meta property="og:image" content="https://imanhal.github.io/assets/img/blog/era5-cds-page.webp" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-22T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://imanhal.github.io/assets/img/blog/era5-cds-page.webp" />
+<meta property="twitter:title" content="Building an ERA5-to-SCALE Workflow for Students" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manhal Alhilali"},"dateModified":"2025-11-22T00:00:00+00:00","datePublished":"2025-11-22T00:00:00+00:00","description":"Recently, I built and refined a practical workflow to help students use ERA5 data with SCALE-RM more confidently.","headline":"Building an ERA5-to-SCALE Workflow for Students","image":"https://imanhal.github.io/assets/img/blog/era5-cds-page.webp","mainEntityOfPage":{"@type":"WebPage","@id":"https://imanhal.github.io/blog/era5-scale-workflow-for-students/"},"url":"https://imanhal.github.io/blog/era5-scale-workflow-for-students/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="/assets/css/main.min.css">
+  <link rel="stylesheet" href="/assets/css/vendors.min.css">
+
+  <style>
+    html.blog-post-page {
+      height: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    body.blog-post-page-body {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+  </style>
+</head>
+
+<body class="blog-post-page-body">
+  <div class="layout">
+    <section class="card neumorphism-card-big blog-post-card">
+      <p class="blog-post-kicker">Blog</p>
+      <h1 class="title">Building an ERA5-to-SCALE Workflow for Students</h1>
+
+      
+        <p class="blog-post-summary">I created a student-friendly workflow to use ERA5 data with SCALE-RM, focusing on reliability, clarity, and reproducibility for realistic case studies.</p>
+      
+
+      
+        <figure class="blog-post-hero">
+          <img src="/assets/img/blog/era5-cds-page.webp" alt="Building an ERA5-to-SCALE Workflow for Students cover image" loading="eager" decoding="async">
+        </figure>
+      
+
+      
+      
+      
+
+      <p class="blog-post-meta">
+        <span>November 22, 2025</span>
+        <span class="blog-post-meta-sep">&bull;</span>
+        <span>2 min read</span>
+      </p>
+
+      
+        <div class="tag-wrapper blog-tag-wrapper blog-post-tag-wrapper">
+          
+            
+            
+              <span class="tag neumorphism-card blog-tag-pill">ERA5</span>
+            
+          
+            
+            
+              <span class="tag neumorphism-card blog-tag-pill">SCALE</span>
+            
+          
+            
+            
+              <span class="tag neumorphism-card blog-tag-pill">Reanalysis</span>
+            
+          
+            
+            
+              <span class="tag neumorphism-card blog-tag-pill">Workflow</span>
+            
+          
+            
+            
+              <span class="tag neumorphism-card blog-tag-pill">Education</span>
+            
+          
+        </div>
+      
+
+      <div class="description blog-post-content">
+        <p>Recently, I built and refined a practical workflow to help students use <strong>ERA5</strong> data with <strong>SCALE-RM</strong> more confidently.</p>
+
+<p>This effort started from a common gap: students can follow documentation step by step, but they still need a smooth path from “data request” to “ready-to-run experiment setup”. My goal was to make that path clearer, less error-prone, and easier to repeat across different test cases.</p>
+
+<p>Instead of focusing on individual commands, I focused on the full user experience:</p>
+
+<ul>
+  <li>clear onboarding for first-time users,</li>
+  <li>consistent dataset preparation,</li>
+  <li>fewer manual pitfalls,</li>
+  <li>and a reusable structure students can adapt to their own projects.</li>
+</ul>
+
+<figure style="margin:1rem 0 1.25rem; text-align:center;">
+  <img src="/assets/img/blog/era5-scale-wind-map.webp" alt="Example atmospheric field visualization used in case setup checks" style="width:60%;height:auto;border-radius:0.9rem;box-shadow:0 0.35rem 0.95rem rgba(0,0,0,0.33);display:block;margin:0 auto;" loading="lazy" decoding="async" />
+  <figcaption style="opacity:0.82;font-size:0.92rem;margin-top:0.45rem;text-align:center;">Visual checks are useful for confirming that inputs look physically consistent before simulation.</figcaption>
+</figure>
+
+<p>I originally prepared this as a tutorial for students, and I plan to keep improving it as we test more cases and collect feedback.</p>
+
+<p>If you are training newcomers in cloud-resolving modeling, I have found that investing in workflow design early saves significant time later.</p>
+
+      </div>
+
+      
+      
+      
+      
+
+      
+      
+      
+
+      <hr class="blog-post-divider">
+
+      <div class="blog-post-nav">
+        
+          <span class="blog-post-nav-placeholder">Newer Post</span>
+        
+
+        <a id="back-to-blog-link" class="highlight-link" href="/#blog">Back to Blog</a>
+
+        
+          <a class="highlight-link" href="/blog/cumulonimbus-sdm-cg-visualization/">Older Post</a>
+        
+      </div>
+
+      
+      <div class="blog-related">
+        <h2 class="subtitle blog-related-title">Related Posts</h2>
+        <div class="projects-wrapper blog-related-grid">
+          
+            
+          
+            
+              
+              
+                
+                  
+                
+                  
+                
+                  
+                
+                  
+                
+                  
+                
+              
+
+              
+            
+          
+        </div>
+
+        
+          <p class="description">No related posts yet.</p>
+        
+      </div>
+    </section>
+  </div>
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQV865PC9T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "G-WQV865PC9T");
+  </script>
+  
+
+  <script>
+    (function () {
+      var backLink = document.getElementById('back-to-blog-link');
+      if (!backLink) {
+        return;
+      }
+
+      backLink.addEventListener('click', function (event) {
+        if (!document.referrer || window.history.length <= 1) {
+          return;
+        }
+
+        try {
+          var refUrl = new URL(document.referrer);
+          if (refUrl.origin === window.location.origin) {
+            event.preventDefault();
+            window.history.back();
+          }
+        } catch (err) {
+          // Fall back to regular href navigation.
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
