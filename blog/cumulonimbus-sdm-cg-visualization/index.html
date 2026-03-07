@@ -166,6 +166,24 @@
 
       <hr class="blog-post-divider">
 
+      
+  
+  
+  <div id="blog-comments" class="blog-comments" data-utter-theme="dark-blue">
+    <h2 class="subtitle blog-comments-title">Comments</h2>
+    <script
+      src="https://utteranc.es/client.js"
+      repo="imanhal/imanhal.github.io"
+      issue-term="pathname"
+      label="blog-comment"
+      theme="dark-blue"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </div>
+
+
+
       <div class="blog-post-nav">
         
           <a class="highlight-link" href="/blog/era5-scale-workflow-for-students/">Newer Post</a>
@@ -244,6 +262,121 @@
         }
       });
     })();
+  </script>
+  <script>
+    // BLOG_COMMENTS_FOCUS_START
+    (function () {
+      var commentsRoot = document.getElementById('blog-comments');
+      if (!commentsRoot) {
+        return;
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var focusParam = params.get('focus') === 'comments';
+      var hashFocus = window.location.hash === '#blog-comments';
+      var anchorKey = 'blog-comments-anchor:' + window.location.pathname;
+      var persistedFocus = sessionStorage.getItem(anchorKey) === '1';
+      var shouldFocus = focusParam || hashFocus || persistedFocus;
+
+      if (!shouldFocus) {
+        sessionStorage.removeItem(anchorKey);
+        return;
+      }
+
+      sessionStorage.setItem(anchorKey, '1');
+
+      var scrollToComments = function () {
+        commentsRoot.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      var attempts = 0;
+      var maxAttempts = 7;
+      var runStickyScroll = function () {
+        scrollToComments();
+        attempts += 1;
+
+        if (attempts < maxAttempts) {
+          window.setTimeout(runStickyScroll, 500);
+          return;
+        }
+
+        if (focusParam) {
+          params.delete('focus');
+          var nextSearch = params.toString();
+          var cleanUrl = window.location.pathname + (nextSearch ? ('?' + nextSearch) : '') + '#blog-comments';
+          window.history.replaceState({}, '', cleanUrl);
+        }
+      };
+
+      window.setTimeout(runStickyScroll, 120);
+      window.addEventListener('focus', function () {
+        window.setTimeout(scrollToComments, 120);
+      });
+      window.addEventListener('pageshow', function () {
+        window.setTimeout(scrollToComments, 120);
+      });
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+          window.setTimeout(scrollToComments, 120);
+        }
+      });
+    })();
+    // BLOG_COMMENTS_FOCUS_END
+  </script>
+  <script>
+    // BLOG_COMMENTS_THEME_LOCK_START
+    (function () {
+      var commentsRoot = document.getElementById('blog-comments');
+      if (!commentsRoot) {
+        return;
+      }
+
+      var theme = commentsRoot.getAttribute('data-utter-theme');
+      if (!theme) {
+        return;
+      }
+
+      var postTheme = function () {
+        var frame = document.querySelector('iframe.utterances-frame');
+        if (!frame || !frame.contentWindow) {
+          return false;
+        }
+
+        frame.contentWindow.postMessage(
+          {
+            type: 'set-theme',
+            theme: theme
+          },
+          'https://utteranc.es'
+        );
+        return true;
+      };
+
+      var tries = 0;
+      var maxTries = 24;
+      var timer = window.setInterval(function () {
+        tries += 1;
+        var ok = postTheme();
+        if (ok || tries >= maxTries) {
+          window.clearInterval(timer);
+        }
+      }, 250);
+
+      window.addEventListener('focus', function () {
+        window.setTimeout(postTheme, 80);
+      });
+
+      window.addEventListener('pageshow', function () {
+        window.setTimeout(postTheme, 80);
+      });
+
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+          window.setTimeout(postTheme, 80);
+        }
+      });
+    })();
+    // BLOG_COMMENTS_THEME_LOCK_END
   </script>
 </body>
 </html>
