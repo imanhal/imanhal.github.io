@@ -32,12 +32,17 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
   <link rel="manifest" href="/assets/favicon/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="/assets/img/background-optimized.webp" type="image/webp" fetchpriority="high">
 
-  <link rel="stylesheet" href="/assets/css/main.min.css?v=20260417b">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Raleway&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Raleway&display=swap"></noscript>
+  <link rel="stylesheet" href="/assets/css/main.min.css?v=20260429glass37">
   <link rel="stylesheet" href="/assets/css/vendors.min.css">
 
-  <script src="/assets/js/vendors.min.js"></script>
-  <script src="/assets/js/app.min.js"></script>
+  <script src="/assets/js/vendors.min.js" defer></script>
+  <script src="/assets/js/app.min.js?v=20260429glass37" defer></script>
 </head>
 
 <body>
@@ -80,7 +85,7 @@
       <img id="name-cloud-burst-img" src="" alt="">
     </div>
     <div id="birthday-banner" class="birthday-banner" aria-hidden="true">
-      <img id="birthday-banner-img" src="/assets/img/seasons/birthday/happy-birthday.gif" alt="Happy Birthday">
+      <img id="birthday-banner-img" data-src="/assets/img/seasons/birthday/happy-birthday.gif" alt="Happy Birthday" loading="lazy" decoding="async">
       <p id="birthday-banner-caption" class="birthday-banner-caption">to me!</p>
     </div>
     <h1>Hi, I&#39;m
@@ -1370,27 +1375,27 @@
 <h1 class="title">Selected Publications & Conferences</h1>
 
 
-<div class="top-collaborators" data-aos="fade-up">
+<div class="top-collaborators">
   <h2 class="subtitle top-collaborators-title">Top collaborators</h2>
   <div class="top-collaborators-row">
     <figure class="top-collaborator-item">
-      <img src="/assets/img/collab/grabowski.webp" alt="Wojciech W. Grabowski" loading="lazy" decoding="async">
+      <img src="/assets/img/collab/grabowski.webp" alt="Wojciech W. Grabowski" loading="eager" decoding="async" fetchpriority="high">
       <figcaption>Wojciech W. Grabowski</figcaption>
     </figure>
     <figure class="top-collaborator-item">
-      <img src="/assets/img/collab/nishizawa.webp" alt="Seiya Nishizawa" loading="lazy" decoding="async">
+      <img src="/assets/img/collab/nishizawa.webp" alt="Seiya Nishizawa" loading="eager" decoding="async" fetchpriority="high">
       <figcaption>Seiya Nishizawa</figcaption>
     </figure>
     <figure class="top-collaborator-item">
-      <img src="/assets/img/collab/shima.webp" alt="Shin-ichiro Shima" loading="lazy" decoding="async">
+      <img src="/assets/img/collab/shima.webp" alt="Shin-ichiro Shima" loading="eager" decoding="async" fetchpriority="high">
       <figcaption>Shin-ichiro Shima</figcaption>
     </figure>
     <figure class="top-collaborator-item">
-      <img src="/assets/img/collab/thara.webp" alt="Thara Prabhakaran" loading="lazy" decoding="async">
+      <img src="/assets/img/collab/thara.webp" alt="Thara Prabhakaran" loading="eager" decoding="async" fetchpriority="high">
       <figcaption>Thara Prabhakaran</figcaption>
     </figure>
     <figure class="top-collaborator-item">
-      <img src="/assets/img/collab/samanta.webp" alt="Soumya Samanta" loading="lazy" decoding="async">
+      <img src="/assets/img/collab/samanta.webp" alt="Soumya Samanta" loading="eager" decoding="async" fetchpriority="high">
       <figcaption>Soumya Samanta</figcaption>
     </figure>
   </div>
@@ -10587,7 +10592,7 @@
         &copy; 2020 Designed & Developed by
         <span class="footer-credit-signature">
           <span class="footer-hanko" aria-hidden="true">
-            <img src="/assets/img/manhal-hanko-footer.webp?v=20260417b" alt="" loading="lazy" decoding="async">
+            <img src="/assets/img/manhal-hanko-footer.webp?v=20260429glass37" alt="" loading="lazy" decoding="async">
           </span>
           <a class="highlight-link skip-external-icon" href="https://imanhal.github.io/" target="_blank" rel="noreferrer">
             Manhal
