@@ -36,7 +36,30 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Raleway&display=swap"></noscript>
   <link rel="stylesheet" href="/assets/css/main.min.css?v=20260519deck117">
   <link rel="stylesheet" href="/assets/css/vendors.min.css">
-  
+
+  <script>
+  /* Apply saved theme + language synchronously before paint to avoid FOUC.
+     Defaults: dark theme, English. The user's stored choices override. */
+  (function () {
+    try {
+      if (localStorage.getItem('site-theme') === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+
+      var storedLang = localStorage.getItem('site-lang') || 'en';
+      if (storedLang === 'ar') {
+        document.documentElement.classList.add('lang-ar');
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.documentElement.setAttribute('lang', 'ar');
+      } else if (storedLang === 'ja') {
+        document.documentElement.classList.add('lang-ja');
+        document.documentElement.setAttribute('lang', 'ja');
+      }
+    } catch (e) {}
+  })();
+</script>
+
+
   <style>
     html.news-post-page {
       height: auto;
@@ -54,6 +77,429 @@
 </head>
 
 <body class="news-post-page-body">
+  <div class="page-toolbar" role="group" aria-label="Site preferences">
+  <button type="button" class="theme-toggle page-toolbar-button" id="theme-toggle" aria-label="Toggle light or dark theme" aria-pressed="false" title="Toggle theme">
+    <svg class="theme-toggle-icon theme-toggle-icon--moon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon--sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"></circle>
+      <line x1="12" y1="2" x2="12" y2="4"></line>
+      <line x1="12" y1="20" x2="12" y2="22"></line>
+      <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+      <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+      <line x1="2" y1="12" x2="4" y2="12"></line>
+      <line x1="20" y1="12" x2="22" y2="12"></line>
+      <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+      <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+    </svg>
+  </button>
+
+  <div class="lang-toggle-wrap">
+    <button type="button" class="lang-toggle page-toolbar-button" id="lang-toggle" aria-haspopup="true" aria-expanded="false" aria-label="Switch language" title="Switch language">
+      <span class="lang-toggle-label" id="lang-toggle-label" aria-hidden="true">EN</span>
+      <span class="lang-toggle-spinner" aria-hidden="true"></span>
+    </button>
+    <div class="lang-menu" id="lang-menu" role="menu" aria-hidden="true">
+      <button class="lang-menu-item" role="menuitem" type="button" data-set-lang="en">
+        <span class="lang-menu-tick" aria-hidden="true">✓</span>
+        <span class="lang-menu-text">English</span>
+      </button>
+      <button class="lang-menu-item" role="menuitem" type="button" data-set-lang="ar">
+        <span class="lang-menu-tick" aria-hidden="true">✓</span>
+        <span class="lang-menu-text">العربية</span>
+        <svg class="lang-menu-mt-icon" viewBox="0 0 24 24" aria-label="machine translated by Google Translate" role="img"><title>machine translated</title><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+      </button>
+      <button class="lang-menu-item" role="menuitem" type="button" data-set-lang="ja">
+        <span class="lang-menu-tick" aria-hidden="true">✓</span>
+        <span class="lang-menu-text">日本語</span>
+        <svg class="lang-menu-mt-icon" viewBox="0 0 24 24" aria-label="machine translated by Google Translate" role="img"><title>machine translated</title><path fill="currentColor" d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* Theme toggle + 3-language menu (EN / AR / JA) + on-the-fly machine translation
+     via Google's free gtx endpoint. Persists choices to localStorage. */
+  (function () {
+    var themeBtn = document.getElementById('theme-toggle');
+    var langBtn = document.getElementById('lang-toggle');
+    var langLabel = document.getElementById('lang-toggle-label');
+    var langMenu = document.getElementById('lang-menu');
+
+    /* ---------- theme ---------- */
+    function syncTheme() {
+      if (!themeBtn) return;
+      var isLight = document.documentElement.classList.contains('light-theme');
+      themeBtn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+      themeBtn.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
+    }
+    if (themeBtn) {
+      syncTheme();
+      themeBtn.addEventListener('click', function () {
+        var willBeLight = !document.documentElement.classList.contains('light-theme');
+        document.documentElement.classList.toggle('light-theme', willBeLight);
+        try { localStorage.setItem('site-theme', willBeLight ? 'light' : 'dark'); } catch (e) {}
+        syncTheme();
+      });
+    }
+
+    /* ---------- language + translation ----------
+       Uses https://translate.googleapis.com/translate_a/single (the same backend
+       Google's own translate.google.com uses). No API key, generous anti-abuse
+       budget for personal-scale traffic. Results cache per-target-language. */
+    var GT_ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
+    var BATCH_CHAR_LIMIT = 1800;
+    var MAX_CONCURRENT_BATCHES = 4;
+    var LANG_CONFIG = {
+      en: { dir: 'ltr', label: 'EN' },
+      ar: { dir: 'rtl', label: 'ع' },
+      ja: { dir: 'ltr', label: '日' }
+    };
+    var CACHE_VERSION = 'v4';
+
+    var originalTextMap = new Map();  // node -> original (English) textContent
+    var translatingNow = false;
+
+    function cacheKey(lang) {
+      return 'site-translation-cache-' + lang + '-' + CACHE_VERSION;
+    }
+    function readCache(lang) {
+      try { return JSON.parse(localStorage.getItem(cacheKey(lang)) || '{}'); }
+      catch (e) { return {}; }
+    }
+    function writeCache(lang, c) {
+      try { localStorage.setItem(cacheKey(lang), JSON.stringify(c)); }
+      catch (e) {}
+    }
+
+    function currentLang() {
+      if (document.documentElement.classList.contains('lang-ar')) return 'ar';
+      if (document.documentElement.classList.contains('lang-ja')) return 'ja';
+      return 'en';
+    }
+
+    function syncLang() {
+      var lang = currentLang();
+      if (langLabel) langLabel.textContent = LANG_CONFIG[lang].label;
+      if (langBtn) {
+        langBtn.classList.toggle('is-busy', translatingNow);
+      }
+      // Reflect selected language as the active menu item.
+      if (langMenu) {
+        var items = langMenu.querySelectorAll('.lang-menu-item');
+        items.forEach(function (item) {
+          item.classList.toggle('is-active', item.getAttribute('data-set-lang') === lang);
+        });
+      }
+    }
+    function setBusy(busy) {
+      translatingNow = busy;
+      if (langBtn) langBtn.classList.toggle('is-busy', busy);
+    }
+
+    function collectTextNodes() {
+      var walker = document.createTreeWalker(
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: function (node) {
+            var text = node.textContent.trim();
+            if (text.length < 2) return NodeFilter.FILTER_REJECT;
+            if (!/[a-zA-Z]/.test(text)) return NodeFilter.FILTER_REJECT;
+            var p = node.parentElement;
+            if (!p) return NodeFilter.FILTER_REJECT;
+            var tag = p.tagName;
+            if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT' || tag === 'CODE' || tag === 'KBD' || tag === 'PRE') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            if (p.closest('.page-toolbar')) return NodeFilter.FILTER_REJECT;
+            if (p.closest('.item-code')) return NodeFilter.FILTER_REJECT;
+            if (p.closest('.no-translate')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        }
+      );
+      var nodes = [];
+      var n;
+      while ((n = walker.nextNode())) nodes.push(n);
+      return nodes;
+    }
+
+    /* Return true when text is already in the target language so we can skip
+       a wasted round trip through gtx (and avoid potential garbled output). */
+    function alreadyInTargetLang(text, target) {
+      if (target === 'ar') {
+        return /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/.test(text);
+      }
+      if (target === 'ja') {
+        // Hiragana, Katakana, CJK Unified Ideographs.
+        return /[぀-ゟ゠-ヿ一-鿿]/.test(text);
+      }
+      return false;
+    }
+
+    function translateSingle(text, target) {
+      if (alreadyInTargetLang(text, target)) return Promise.resolve(text);
+      // sl=auto lets gtx detect the source language — important for the
+      // Rain-C news titles which are Japanese rather than English.
+      var url = GT_ENDPOINT + '?client=gtx&sl=auto&tl=' + target + '&dt=t&q=' + encodeURIComponent(text);
+      return fetch(url)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function (data) {
+          if (!data || !Array.isArray(data[0])) return text;
+          var all = data[0].map(function (item) { return (item && item[0]) || ''; }).join('');
+          return all || text;
+        })
+        .catch(function () { return text; });
+    }
+
+    function translateBatch(texts, target) {
+      var joined = texts.join('\n');
+      var url = GT_ENDPOINT + '?client=gtx&sl=auto&tl=' + target + '&dt=t&q=' + encodeURIComponent(joined);
+      return fetch(url)
+        .then(function (r) { return r.ok ? r.json() : Promise.reject('bad response'); })
+        .then(function (data) {
+          if (!data || !Array.isArray(data[0])) return Promise.reject('no data');
+          var allText = data[0].map(function (item) {
+            return (item && item[0]) || '';
+          }).join('');
+          var segs = allText.split('\n');
+          if (segs.length === texts.length) return segs;
+          return retryPerItem(texts, target);
+        })
+        .catch(function () { return retryPerItem(texts, target); });
+    }
+
+    function retryPerItem(texts, target) {
+      var out = new Array(texts.length);
+      var idx = 0;
+      var concurrency = 4;
+      var inflight = 0;
+      return new Promise(function (resolve) {
+        function step() {
+          if (idx >= texts.length && inflight === 0) { resolve(out); return; }
+          while (inflight < concurrency && idx < texts.length) {
+            (function (i) {
+              inflight += 1;
+              translateSingle(texts[i], target).then(function (t) {
+                out[i] = t;
+                inflight -= 1;
+                step();
+              });
+            })(idx);
+            idx += 1;
+          }
+        }
+        step();
+      });
+    }
+
+    function makeBatches(items) {
+      var batches = [];
+      var current = [];
+      var currentLen = 0;
+      for (var i = 0; i < items.length; i += 1) {
+        var itemLen = items[i].key.length + 1;
+        if (currentLen + itemLen > BATCH_CHAR_LIMIT && current.length > 0) {
+          batches.push(current);
+          current = [];
+          currentLen = 0;
+        }
+        current.push(items[i]);
+        currentLen += itemLen;
+      }
+      if (current.length > 0) batches.push(current);
+      return batches;
+    }
+
+    function translateAllNodes(nodes, target) {
+      var cache = readCache(target);
+      var toTranslate = [];
+      var dirty = false;
+
+      for (var i = 0; i < nodes.length; i += 1) {
+        var node = nodes[i];
+        var original = node.textContent;
+        var key = original.trim();
+        if (!originalTextMap.has(node)) originalTextMap.set(node, original);
+        if (alreadyInTargetLang(key, target)) {
+          // Source text is already in the target language (e.g., Rain-C
+          // titles are Japanese, so in Japanese mode we leave them alone).
+          continue;
+        }
+        if (cache[key]) {
+          node.textContent = original.replace(key, cache[key]);
+        } else {
+          toTranslate.push({ node: node, original: original, key: key });
+        }
+      }
+      if (toTranslate.length === 0) return Promise.resolve();
+
+      var batches = makeBatches(toTranslate);
+      var batchQueue = batches.slice();
+      var inflight = 0;
+
+      return new Promise(function (resolve) {
+        function next() {
+          if (batchQueue.length === 0 && inflight === 0) {
+            if (dirty) writeCache(target, cache);
+            resolve();
+            return;
+          }
+          while (inflight < MAX_CONCURRENT_BATCHES && batchQueue.length > 0) {
+            var batch = batchQueue.shift();
+            var texts = batch.map(function (b) { return b.key; });
+            inflight += 1;
+            translateBatch(texts, target).then(function (capturedBatch) {
+              return function (translations) {
+                for (var j = 0; j < capturedBatch.length; j += 1) {
+                  var t = translations[j];
+                  var item = capturedBatch[j];
+                  if (t && t !== item.key) {
+                    cache[item.key] = t;
+                    dirty = true;
+                    item.node.textContent = item.original.replace(item.key, t);
+                  }
+                }
+                inflight -= 1;
+                next();
+              };
+            }(batch));
+          }
+        }
+        next();
+      });
+    }
+
+    function untranslate() {
+      originalTextMap.forEach(function (original, node) {
+        node.textContent = original;
+      });
+    }
+
+    function refreshTypingRotator(target) {
+      var el = document.getElementById('txt-rotate');
+      if (!el) return Promise.resolve();
+      if (!el.hasAttribute('data-rotate-original')) {
+        el.setAttribute('data-rotate-original', el.getAttribute('data-rotate') || '[]');
+      }
+      var originalJson = el.getAttribute('data-rotate-original') || '[]';
+      var originalStrings;
+      try { originalStrings = JSON.parse(originalJson); }
+      catch (e) { return Promise.resolve(); }
+      if (!Array.isArray(originalStrings)) return Promise.resolve();
+
+      function applyStrings(strings) {
+        if (!window.TxtRotate) {
+          el.setAttribute('data-rotate', JSON.stringify(strings));
+          return;
+        }
+        var clone = el.cloneNode(false);
+        clone.setAttribute('data-rotate', JSON.stringify(strings));
+        clone.innerHTML = '';
+        el.parentNode.replaceChild(clone, el);
+        var period = parseInt(clone.getAttribute('data-period'), 10) || 2000;
+        try { new window.TxtRotate(clone, strings, period); } catch (e) {}
+        el = clone;
+      }
+
+      if (target === 'en') {
+        applyStrings(originalStrings);
+        return Promise.resolve();
+      }
+      return retryPerItem(originalStrings, target).then(function (translated) {
+        applyStrings(translated);
+      });
+    }
+
+    function setLang(lang) {
+      if (!LANG_CONFIG[lang]) lang = 'en';
+      // Reset DOM to English first so we don't translate Arabic into Japanese.
+      untranslate();
+
+      document.documentElement.classList.toggle('lang-ar', lang === 'ar');
+      document.documentElement.classList.toggle('lang-ja', lang === 'ja');
+      document.documentElement.setAttribute('dir', LANG_CONFIG[lang].dir);
+      document.documentElement.setAttribute('lang', lang);
+      try { localStorage.setItem('site-lang', lang); } catch (e) {}
+      syncLang();
+
+      if (lang === 'en') {
+        refreshTypingRotator('en');
+        return;
+      }
+      setBusy(true);
+      var nodes = collectTextNodes();
+      Promise.all([
+        translateAllNodes(nodes, lang),
+        refreshTypingRotator(lang)
+      ]).then(function () { setBusy(false); });
+    }
+
+    /* ---------- menu open/close ---------- */
+    function openMenu() {
+      if (!langMenu || !langBtn) return;
+      langMenu.classList.add('is-open');
+      langMenu.setAttribute('aria-hidden', 'false');
+      langBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closeMenu() {
+      if (!langMenu || !langBtn) return;
+      langMenu.classList.remove('is-open');
+      langMenu.setAttribute('aria-hidden', 'true');
+      langBtn.setAttribute('aria-expanded', 'false');
+    }
+    if (langBtn) {
+      langBtn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var isOpen = langMenu && langMenu.classList.contains('is-open');
+        if (isOpen) closeMenu(); else openMenu();
+      });
+    }
+    if (langMenu) {
+      langMenu.addEventListener('click', function (ev) {
+        var target = ev.target.closest('.lang-menu-item');
+        if (!target) return;
+        ev.stopPropagation();
+        var lang = target.getAttribute('data-set-lang') || 'en';
+        closeMenu();
+        if (lang !== currentLang()) setLang(lang);
+      });
+    }
+    document.addEventListener('click', function (ev) {
+      if (!langMenu || !langMenu.classList.contains('is-open')) return;
+      if (langMenu.contains(ev.target) || (langBtn && langBtn.contains(ev.target))) return;
+      closeMenu();
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && langMenu && langMenu.classList.contains('is-open')) closeMenu();
+    });
+
+    /* ---------- initial state on page load ---------- */
+    function runInitialTranslation() {
+      try {
+        var stored = localStorage.getItem('site-lang') || 'en';
+        if (!LANG_CONFIG[stored]) stored = 'en';
+        syncLang();
+        if (stored === 'en') return;
+        setBusy(true);
+        var nodes = collectTextNodes();
+        Promise.all([
+          translateAllNodes(nodes, stored),
+          refreshTypingRotator(stored)
+        ]).then(function () { setBusy(false); });
+      } catch (e) {}
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runInitialTranslation, { once: true });
+    } else {
+      runInitialTranslation();
+    }
+  })();
+</script>
+
   <div class="layout">
     <section class="card neumorphism-card-big">
       <h1 class="title">Presented at the EU-Japan AI4Good cooperation workshop during Digital Week 2026</h1>
