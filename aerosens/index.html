@@ -89,6 +89,47 @@
   </div>
 
   <script src="/assets/js/article-progress.min.js?v=20260521jpgu" defer></script>
+
+  <!-- AeroSens deck: one-click auto-login from a trusted link.
+       Reads a password from the URL fragment (#pwd=...), fills the unlock
+       field, strips the token from the URL, then clicks "Unlock". The token
+       lives only in the #fragment (never sent to the server) and is removed
+       from history via replaceState immediately. No secret is stored in this
+       file. NOTE: any link containing #pwd= embeds the deck password in
+       plaintext — keep such links private; a leak means rotating the password
+       and re-encrypting the payload. -->
+  <script>
+  (function () {
+    function autoUnlock() {
+      var m = (location.hash || "").match(/(?:^#|[#&])pwd=([^&]+)/);
+      if (!m) return;                        // no token in URL -> normal password prompt
+      var pw = decodeURIComponent(m[1]);
+      var input = document.querySelector('input[type="password"]');
+      if (!input) return;
+      input.value = pw;
+      input.dispatchEvent(new Event('input',  { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+
+      var btn = null, els = document.querySelectorAll('button, input[type="submit"], a');
+      for (var i = 0; i < els.length; i++) {
+        var t = (els[i].textContent || els[i].value || '').trim();
+        if (/unlock|log\s*in|sign\s*in|enter/i.test(t)) { btn = els[i]; break; }
+      }
+
+      // Strip the token from the URL/history BEFORE submitting.
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+
+      // Only auto-submit by clicking the unlock control (which runs the deck's
+      // client-side decrypt handler). We intentionally do NOT fall back to a
+      // native form.submit(): the unlock form is GET with no action, so a
+      // native submit would leak ?password=... into the URL and server logs.
+      // If no button is found, the field is left filled for manual unlock.
+      if (btn) btn.click();
+    }
+    if (document.readyState !== 'loading') autoUnlock();
+    else document.addEventListener('DOMContentLoaded', autoUnlock);
+  })();
+  </script>
 </body>
 
 </html>
